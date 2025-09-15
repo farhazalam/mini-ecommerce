@@ -388,15 +388,17 @@ class ProfilePage extends StatelessWidget {
         return;
       }
 
-      if (context.mounted) {
-        Navigator.of(context).pop(); // Close loading dialog
+      // Check if storage is enabled before closing loading dialog
+      if (!AppConfig.enableFirebaseStorage) {
+        if (context.mounted) {
+          Navigator.of(context).pop(); // Close loading dialog
+          _showStorageDisabledAfterCrop(context);
+        }
+        return;
       }
 
-      // Check if storage is enabled
-      if (!AppConfig.enableFirebaseStorage) {
-        // Show storage disabled message
-        _showStorageDisabledAfterCrop(context);
-        return;
+      if (context.mounted) {
+        Navigator.of(context).pop(); // Close loading dialog
       }
 
       // If storage is enabled, proceed with upload
