@@ -1,0 +1,15 @@
+{
+  "appTitle": "متجر إلكتروني صغير",
+  "welcome": "مرحباً!",
+  "hello": "مرحباً، {name}!",
+  "quickActions": "الإجراءات السريعة",
+  "browseProducts": "تصفح المنتجات",
+  "myOrders": "طلباتي",
+  "profile": "الملف الشخصي",
+  "nearby": "القريب",
+  "logout": "تسجيل الخروج",
+  "language": "اللغة",
+  "english": "English",
+  "arabic": "العربية",
+  "selectLanguage": "اختر اللغة"
+}

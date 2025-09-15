@@ -96,7 +96,15 @@ cd mini_ecommerce
 flutter pub get
 ```
 
-### 3. Google Maps Setup (Optional)
+### 3. Generate Localization Files
+
+```bash
+flutter gen-l10n
+```
+
+**Note**: The localization feature is implemented only on the homepage for demonstration purposes. It supports English and Arabic languages with RTL layout support.
+
+### 4. Google Maps Setup (Optional)
 
 1. Go to [Google Cloud Console](https://console.cloud.google.com/)
 2. Enable Maps SDK for Android and iOS

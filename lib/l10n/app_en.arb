@@ -1,0 +1,15 @@
+{
+  "appTitle": "Mini E-commerce",
+  "welcome": "Welcome!",
+  "hello": "Hello, {name}!",
+  "quickActions": "Quick Actions",
+  "browseProducts": "Browse Products",
+  "myOrders": "My Orders",
+  "profile": "Profile",
+  "nearby": "Nearby",
+  "logout": "Logout",
+  "language": "Language",
+  "english": "English",
+  "arabic": "العربية",
+  "selectLanguage": "Select Language"
+}
