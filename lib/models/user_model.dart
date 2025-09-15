@@ -2,6 +2,7 @@ class UserModel {
   final String uid;
   final String email;
   final String fullName;
+  final String? profileImageUrl;
   final DateTime? createdAt;
   final DateTime? updatedAt;
 
@@ -9,6 +10,7 @@ class UserModel {
     required this.uid,
     required this.email,
     required this.fullName,
+    this.profileImageUrl,
     this.createdAt,
     this.updatedAt,
   });
@@ -19,6 +21,7 @@ class UserModel {
       uid: map['uid'] ?? '',
       email: map['email'] ?? '',
       fullName: map['fullName'] ?? '',
+      profileImageUrl: map['profileImageUrl'],
       createdAt: map['createdAt']?.toDate(),
       updatedAt: map['updatedAt']?.toDate(),
     );
@@ -30,6 +33,7 @@ class UserModel {
       'uid': uid,
       'email': email,
       'fullName': fullName,
+      'profileImageUrl': profileImageUrl,
       'createdAt': createdAt,
       'updatedAt': updatedAt,
     };
@@ -40,6 +44,7 @@ class UserModel {
     String? uid,
     String? email,
     String? fullName,
+    String? profileImageUrl,
     DateTime? createdAt,
     DateTime? updatedAt,
   }) {
@@ -47,6 +52,7 @@ class UserModel {
       uid: uid ?? this.uid,
       email: email ?? this.email,
       fullName: fullName ?? this.fullName,
+      profileImageUrl: profileImageUrl ?? this.profileImageUrl,
       createdAt: createdAt ?? this.createdAt,
       updatedAt: updatedAt ?? this.updatedAt,
     );

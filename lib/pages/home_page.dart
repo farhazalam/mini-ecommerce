@@ -4,6 +4,7 @@ import '../providers/auth_provider.dart';
 import 'login_page.dart';
 import 'profile_page.dart';
 import 'products_page.dart';
+import 'maps_page.dart';
 
 class HomePage extends StatelessWidget {
   const HomePage({super.key});
@@ -161,13 +162,13 @@ class HomePage extends StatelessWidget {
                       ),
                       _buildActionCard(
                         context,
-                        'Settings',
-                        Icons.settings_outlined,
-                        Colors.grey,
+                        'Nearby',
+                        Icons.location_on_outlined,
+                        Colors.red,
                         () {
-                          ScaffoldMessenger.of(context).showSnackBar(
-                            const SnackBar(
-                              content: Text('Settings feature coming soon!'),
+                          Navigator.of(context).push(
+                            MaterialPageRoute(
+                              builder: (context) => const MapsPage(),
                             ),
                           );
                         },

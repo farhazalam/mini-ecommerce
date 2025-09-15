@@ -1,6 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:cached_network_image/cached_network_image.dart';
+import 'package:image_picker/image_picker.dart';
 import '../providers/auth_provider.dart';
+import '../services/image_service.dart';
+import '../config/app_config.dart';
 import 'edit_profile_page.dart';
 
 class ProfilePage extends StatelessWidget {
@@ -53,18 +57,51 @@ class ProfilePage extends StatelessWidget {
                     child: Column(
                       children: [
                         // Profile Avatar
-                        CircleAvatar(
-                          radius: 50,
-                          backgroundColor: Colors.blue.shade100,
-                          child: Text(
-                            user.fullName.isNotEmpty
-                                ? user.fullName[0].toUpperCase()
-                                : 'U',
-                            style: const TextStyle(
-                              fontSize: 36,
-                              fontWeight: FontWeight.bold,
-                              color: Colors.blue,
-                            ),
+                        GestureDetector(
+                          onTap: () => _showImagePicker(context, authProvider),
+                          child: Stack(
+                            children: [
+                              CircleAvatar(
+                                radius: 50,
+                                backgroundColor: Colors.blue.shade100,
+                                backgroundImage: user.profileImageUrl != null
+                                    ? CachedNetworkImageProvider(
+                                        user.profileImageUrl!,
+                                      )
+                                    : null,
+                                child: user.profileImageUrl == null
+                                    ? Text(
+                                        user.fullName.isNotEmpty
+                                            ? user.fullName[0].toUpperCase()
+                                            : 'U',
+                                        style: const TextStyle(
+                                          fontSize: 36,
+                                          fontWeight: FontWeight.bold,
+                                          color: Colors.blue,
+                                        ),
+                                      )
+                                    : null,
+                              ),
+                              Positioned(
+                                bottom: 0,
+                                right: 0,
+                                child: Container(
+                                  decoration: BoxDecoration(
+                                    color: Colors.blue,
+                                    shape: BoxShape.circle,
+                                    border: Border.all(
+                                      color: Colors.white,
+                                      width: 2,
+                                    ),
+                                  ),
+                                  child: const Icon(
+                                    Icons.camera_alt,
+                                    color: Colors.white,
+                                    size: 20,
+                                  ),
+                                ),
+                              ),
+                            ],
                           ),
                         ),
                         const SizedBox(height: 16),
@@ -255,5 +292,245 @@ class ProfilePage extends StatelessWidget {
   String _formatDate(DateTime? date) {
     if (date == null) return 'Unknown';
     return '${date.day}/${date.month}/${date.year}';
+  }
+
+  void _showImagePicker(BuildContext context, AuthProvider authProvider) {
+    showModalBottomSheet(
+      context: context,
+      builder: (BuildContext context) {
+        return SafeArea(
+          child: Wrap(
+            children: [
+              ListTile(
+                leading: const Icon(Icons.photo_library),
+                title: const Text('Choose from Gallery'),
+                onTap: () async {
+                  Navigator.of(context).pop();
+                  await _pickAndCropImage(
+                    context,
+                    authProvider,
+                    ImageSource.gallery,
+                  );
+                },
+              ),
+              ListTile(
+                leading: const Icon(Icons.camera_alt),
+                title: const Text('Take Photo'),
+                onTap: () async {
+                  Navigator.of(context).pop();
+                  await _pickAndCropImage(
+                    context,
+                    authProvider,
+                    ImageSource.camera,
+                  );
+                },
+              ),
+              if (authProvider.user?.profileImageUrl != null &&
+                  AppConfig.enableFirebaseStorage)
+                ListTile(
+                  leading: const Icon(Icons.delete, color: Colors.red),
+                  title: const Text(
+                    'Remove Photo',
+                    style: TextStyle(color: Colors.red),
+                  ),
+                  onTap: () async {
+                    Navigator.of(context).pop();
+                    await _removeProfileImage(context, authProvider);
+                  },
+                ),
+            ],
+          ),
+        );
+      },
+    );
+  }
+
+  Future<void> _pickAndCropImage(
+    BuildContext context,
+    AuthProvider authProvider,
+    ImageSource source,
+  ) async {
+    try {
+      // Show loading dialog
+      showDialog(
+        context: context,
+        barrierDismissible: false,
+        builder: (context) => const Center(child: CircularProgressIndicator()),
+      );
+
+      // First, try to pick and crop the image
+      final imageFile = await ImageService.pickImage(source: source);
+      if (imageFile == null) {
+        if (context.mounted) {
+          Navigator.of(context).pop(); // Close loading dialog
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(
+              content: Text('No image selected'),
+              backgroundColor: Colors.orange,
+            ),
+          );
+        }
+        return;
+      }
+
+      // Crop the image
+      final croppedFile = await ImageService.cropImage(imageFile.path);
+      if (croppedFile == null) {
+        if (context.mounted) {
+          Navigator.of(context).pop(); // Close loading dialog
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(
+              content: Text('Image cropping cancelled'),
+              backgroundColor: Colors.orange,
+            ),
+          );
+        }
+        return;
+      }
+
+      if (context.mounted) {
+        Navigator.of(context).pop(); // Close loading dialog
+      }
+
+      // Check if storage is enabled
+      if (!AppConfig.enableFirebaseStorage) {
+        // Show storage disabled message
+        _showStorageDisabledAfterCrop(context);
+        return;
+      }
+
+      // If storage is enabled, proceed with upload
+      try {
+        showDialog(
+          context: context,
+          barrierDismissible: false,
+          builder: (context) =>
+              const Center(child: CircularProgressIndicator()),
+        );
+
+        final imageUrl = await ImageService.uploadProfileImage(croppedFile);
+        await ImageService.updateUserProfileImage(imageUrl);
+        await authProvider.refreshUser();
+
+        if (context.mounted) {
+          Navigator.of(context).pop(); // Close loading dialog
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(
+              content: Text('Profile picture updated successfully!'),
+              backgroundColor: Colors.green,
+            ),
+          );
+        }
+      } catch (uploadError) {
+        if (context.mounted) {
+          Navigator.of(context).pop(); // Close loading dialog
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              content: Text('Upload failed: $uploadError'),
+              backgroundColor: Colors.red,
+            ),
+          );
+        }
+      }
+    } catch (e) {
+      if (context.mounted) {
+        Navigator.of(context).pop(); // Close loading dialog
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Error: $e'), backgroundColor: Colors.red),
+        );
+      }
+    }
+  }
+
+  Future<void> _removeProfileImage(
+    BuildContext context,
+    AuthProvider authProvider,
+  ) async {
+    try {
+      final user = authProvider.user;
+      if (user?.profileImageUrl == null) return;
+
+      // Show loading dialog
+      showDialog(
+        context: context,
+        barrierDismissible: false,
+        builder: (context) => const Center(child: CircularProgressIndicator()),
+      );
+
+      // Delete old image from storage
+      await ImageService.deleteProfileImage(user!.profileImageUrl!);
+
+      // Update user profile to remove image URL
+      await ImageService.updateUserProfileImage('');
+
+      // Refresh user data
+      await authProvider.refreshUser();
+
+      if (context.mounted) {
+        Navigator.of(context).pop(); // Close loading dialog
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text('Profile picture removed successfully!'),
+            backgroundColor: Colors.green,
+          ),
+        );
+      }
+    } catch (e) {
+      if (context.mounted) {
+        Navigator.of(context).pop(); // Close loading dialog
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Error: $e'), backgroundColor: Colors.red),
+        );
+      }
+    }
+  }
+
+  void _showStorageDisabledAfterCrop(BuildContext context) {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: const Text('Image Processed Successfully!'),
+          content: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Icon(Icons.check_circle, size: 64, color: Colors.green[400]),
+              const SizedBox(height: 16),
+              const Text(
+                'Your image has been picked and cropped successfully!',
+                textAlign: TextAlign.center,
+                style: TextStyle(fontSize: 16),
+              ),
+              const SizedBox(height: 12),
+              Text(
+                AppConfig.storageDisabledMessage,
+                textAlign: TextAlign.center,
+                style: TextStyle(fontSize: 14, color: Colors.grey[600]),
+              ),
+            ],
+          ),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.of(context).pop(),
+              child: const Text('OK'),
+            ),
+            ElevatedButton(
+              onPressed: () {
+                Navigator.of(context).pop();
+                ScaffoldMessenger.of(context).showSnackBar(
+                  const SnackBar(
+                    content: Text(
+                      'To enable upload: Set enableFirebaseStorage = true in app_config.dart',
+                    ),
+                    duration: Duration(seconds: 3),
+                  ),
+                );
+              },
+              child: const Text('How to Enable Upload'),
+            ),
+          ],
+        );
+      },
+    );
   }
 }
