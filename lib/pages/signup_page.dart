@@ -32,6 +32,9 @@ class _SignUpPageState extends State<SignUpPage> {
     if (_formKey.currentState!.validate()) {
       final authProvider = Provider.of<AuthProvider>(context, listen: false);
 
+      // Clear any previous errors
+      authProvider.clearError();
+
       final success = await authProvider.signUp(
         email: _emailController.text.trim(),
         password: _passwordController.text,
@@ -48,6 +51,9 @@ class _SignUpPageState extends State<SignUpPage> {
 
   Future<void> _handleGoogleSignIn() async {
     final authProvider = Provider.of<AuthProvider>(context, listen: false);
+
+    // Clear any previous errors
+    authProvider.clearError();
 
     final success = await authProvider.signInWithGoogle();
 

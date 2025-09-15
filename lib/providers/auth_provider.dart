@@ -24,6 +24,7 @@ class AuthProvider with ChangeNotifier {
 
   AuthProvider() {
     _init();
+    _checkInitialAuthState();
   }
 
   void _init() {
@@ -34,6 +35,15 @@ class AuthProvider with ChangeNotifier {
         _setUnauthenticated();
       }
     });
+  }
+
+  Future<void> _checkInitialAuthState() async {
+    final currentUser = _authService.currentUser;
+    if (currentUser != null) {
+      await _loadUserData(currentUser.uid);
+    } else {
+      _setUnauthenticated();
+    }
   }
 
   void _setLoading() {
@@ -101,7 +111,9 @@ class AuthProvider with ChangeNotifier {
       );
 
       if (result?.user != null) {
-        return true;
+        // Wait for user data to be loaded from Firestore
+        await _loadUserData(result!.user!.uid);
+        return isAuthenticated;
       }
       return false;
     } catch (e) {
@@ -120,7 +132,9 @@ class AuthProvider with ChangeNotifier {
       );
 
       if (result?.user != null) {
-        return true;
+        // Wait for user data to be loaded from Firestore
+        await _loadUserData(result!.user!.uid);
+        return isAuthenticated;
       }
       return false;
     } catch (e) {
@@ -136,7 +150,9 @@ class AuthProvider with ChangeNotifier {
       final result = await _authService.signInWithGoogle();
 
       if (result?.user != null) {
-        return true;
+        // Wait for user data to be loaded from Firestore
+        await _loadUserData(result!.user!.uid);
+        return isAuthenticated;
       }
       return false;
     } catch (e) {

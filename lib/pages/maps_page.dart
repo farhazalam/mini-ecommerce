@@ -95,8 +95,8 @@ class _MapsPageState extends State<MapsPage> {
       floatingActionButton: AppConfig.enableGoogleMaps
           ? FloatingActionButton(
               onPressed: _getCurrentLocation,
-              child: const Icon(Icons.my_location),
               tooltip: 'Refresh Location',
+              child: const Icon(Icons.my_location),
             )
           : null,
     );
