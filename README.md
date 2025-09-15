@@ -50,15 +50,11 @@ class AppConfig {
 
 ## 📱 Screenshots
 
-### Authentication & Onboarding
-
 <div align="center">
   <img src="screenshots/Simulator Screenshot - iPhone 16 Pro - 2025-09-15 at 15.34.23.png" width="200" alt="Login Screen">
   <img src="screenshots/Simulator Screenshot - iPhone 16 Pro - 2025-09-15 at 15.34.27.png" width="200" alt="Signup Screen">
   <img src="screenshots/Simulator Screenshot - iPhone 16 Pro - 2025-09-15 at 15.34.51.png" width="200" alt="Home Screen">
 </div>
-
-### Product Catalog & Shopping
 
 <div align="center">
   <img src="screenshots/Simulator Screenshot - iPhone 16 Pro - 2025-09-15 at 15.34.56.png" width="200" alt="Products List">
@@ -67,16 +63,12 @@ class AppConfig {
   <img src="screenshots/Simulator Screenshot - iPhone 16 Pro - 2025-09-15 at 15.35.08.png" width="200" alt="Checkout Process">
 </div>
 
-### Order Management & Profile
-
 <div align="center">
   <img src="screenshots/Simulator Screenshot - iPhone 16 Pro - 2025-09-15 at 15.35.12.png" width="200" alt="Order History">
   <img src="screenshots/Simulator Screenshot - iPhone 16 Pro - 2025-09-15 at 15.35.16.png" width="200" alt="Order Details">
   <img src="screenshots/Simulator Screenshot - iPhone 16 Pro - 2025-09-15 at 15.35.22.png" width="200" alt="User Profile">
   <img src="screenshots/Simulator Screenshot - iPhone 16 Pro - 2025-09-15 at 15.35.26.png" width="200" alt="Edit Profile">
 </div>
-
-### Advanced Features
 
 <div align="center">
   <img src="screenshots/Simulator Screenshot - iPhone 16 Pro - 2025-09-15 at 15.35.33.png" width="200" alt="Location Services">
@@ -85,16 +77,12 @@ class AppConfig {
   <img src="screenshots/Simulator Screenshot - iPhone 16 Pro - 2025-09-15 at 15.35.52.png" width="200" alt="Image Cropping">
 </div>
 
-### Localization & UI Features
-
 <div align="center">
   <img src="screenshots/Simulator Screenshot - iPhone 16 Pro - 2025-09-15 at 15.35.57.png" width="200" alt="English Interface">
   <img src="screenshots/Simulator Screenshot - iPhone 16 Pro - 2025-09-15 at 15.36.05.png" width="200" alt="Arabic Interface">
   <img src="screenshots/Simulator Screenshot - iPhone 16 Pro - 2025-09-15 at 15.36.09.png" width="200" alt="Language Selection">
   <img src="screenshots/Simulator Screenshot - iPhone 16 Pro - 2025-09-15 at 15.36.13.png" width="200" alt="RTL Layout">
 </div>
-
-### Product Reviews & Ratings
 
 <div align="center">
   <img src="screenshots/Simulator Screenshot - iPhone 16 Pro - 2025-09-15 at 15.36.19.png" width="200" alt="Rating System">
@@ -103,22 +91,13 @@ class AppConfig {
   <img src="screenshots/Simulator Screenshot - iPhone 16 Pro - 2025-09-15 at 15.46.11.png" width="200" alt="Review History">
 </div>
 
-### Additional Features
-
 <div align="center">
   <img src="screenshots/Simulator Screenshot - iPhone 16 Pro - 2025-09-15 at 15.46.18.png" width="200" alt="Additional Features">
 </div>
 
-## 🎥 Demo Video
+## 🎥 Demo Video Download
 
-<div align="center">
-  <video width="300" controls>
-    <source src="videos/Simulator Screen Recording - iPhone 16 Pro - 2025-09-15 at 15.58.11.mp4" type="video/mp4">
-    Your browser does not support the video tag.
-  </video>
-</div>
-
-_Watch the complete app demo showcasing all features including authentication, product browsing, shopping cart, checkout process, order management, profile customization, localization, and more._
+[Download Video](https://github.com/farhazalam/mini-ecommerce/raw/refs/heads/main/videos/Simulator%20Screen%20Recording%20-%20iPhone%2016%20Pro%20-%202025-09-15%20at%2015.58.11.mp4)
 
 ## 🏗️ Architecture
 
