@@ -7,6 +7,8 @@ class ProductModel {
   final int slp; // Selling Price
   final int quantity;
   final String type;
+  final int totalRatings;
+  final double averageRating;
 
   ProductModel({
     required this.id,
@@ -17,6 +19,8 @@ class ProductModel {
     required this.slp,
     required this.quantity,
     required this.type,
+    this.totalRatings = 0,
+    this.averageRating = 0.0,
   });
 
   factory ProductModel.fromMap(Map<String, dynamic> map, String id) {
@@ -29,6 +33,8 @@ class ProductModel {
       slp: map['slp'] ?? 0,
       quantity: map['quantity'] ?? 0,
       type: map['type'] ?? '',
+      totalRatings: map['totalRatings'] ?? 0,
+      averageRating: (map['averageRating'] ?? 0.0).toDouble(),
     );
   }
 
@@ -41,6 +47,8 @@ class ProductModel {
       'slp': slp,
       'quantity': quantity,
       'type': type,
+      'totalRatings': totalRatings,
+      'averageRating': averageRating,
     };
   }
 
@@ -54,4 +62,10 @@ class ProductModel {
 
   String get formattedMrp => 'AED ${mrp.toString()}';
   String get formattedSlp => 'AED ${slp.toString()}';
+
+  // Rating helper methods
+  bool get hasRatings => totalRatings > 0;
+  String get formattedRating => averageRating.toStringAsFixed(1);
+  String get ratingText =>
+      hasRatings ? '$formattedRating ($totalRatings)' : 'No ratings';
 }

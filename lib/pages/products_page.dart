@@ -4,6 +4,7 @@ import 'package:cached_network_image/cached_network_image.dart';
 import '../models/product_model.dart';
 import '../services/products_service.dart';
 import '../providers/cart_provider.dart';
+import '../widgets/star_rating_widget.dart';
 import 'product_detail_page.dart';
 import 'cart_page.dart';
 
@@ -336,41 +337,41 @@ class _ProductsPageState extends State<ProductsPage> {
                         const SizedBox(height: 8),
 
                         // Price
-                        Row(
+                        Wrap(
                           children: [
                             Text(
                               product.formattedSlp,
                               style: const TextStyle(
                                 fontWeight: FontWeight.bold,
                                 color: Colors.green,
-                                fontSize: 18,
+                                fontSize: 16,
                               ),
                             ),
                             if (product.mrp > product.slp) ...[
-                              const SizedBox(width: 8),
+                              const SizedBox(width: 6),
                               Text(
                                 product.formattedMrp,
                                 style: const TextStyle(
                                   decoration: TextDecoration.lineThrough,
                                   color: Colors.grey,
-                                  fontSize: 14,
+                                  fontSize: 12,
                                 ),
                               ),
-                              const SizedBox(width: 8),
+                              const SizedBox(width: 6),
                               Container(
                                 padding: const EdgeInsets.symmetric(
-                                  horizontal: 6,
-                                  vertical: 2,
+                                  horizontal: 4,
+                                  vertical: 1,
                                 ),
                                 decoration: BoxDecoration(
                                   color: Colors.red.shade100,
-                                  borderRadius: BorderRadius.circular(4),
+                                  borderRadius: BorderRadius.circular(3),
                                 ),
                                 child: Text(
                                   '${product.discountPercentage.toStringAsFixed(0)}% OFF',
                                   style: TextStyle(
                                     color: Colors.red.shade700,
-                                    fontSize: 10,
+                                    fontSize: 8,
                                     fontWeight: FontWeight.bold,
                                   ),
                                 ),
@@ -380,17 +381,30 @@ class _ProductsPageState extends State<ProductsPage> {
                         ),
                         const SizedBox(height: 4),
 
-                        // Stock Status
-                        Text(
-                          product.isInStock
-                              ? '${product.quantity} in stock'
-                              : 'Out of stock',
-                          style: TextStyle(
-                            color: product.isInStock
-                                ? Colors.green
-                                : Colors.red,
-                            fontSize: 12,
-                          ),
+                        // Stock Status and Rating
+                        Wrap(
+                          children: [
+                            Text(
+                              product.isInStock
+                                  ? '${product.quantity} in stock'
+                                  : 'Out of stock',
+                              style: TextStyle(
+                                color: product.isInStock
+                                    ? Colors.green
+                                    : Colors.red,
+                                fontSize: 10,
+                              ),
+                            ),
+                            if (product.hasRatings) ...[
+                              const SizedBox(width: 6),
+                              StarRatingWidget(
+                                rating: product.averageRating,
+                                totalRatings: product.totalRatings,
+                                starSize: 10,
+                                showCount: true,
+                              ),
+                            ],
+                          ],
                         ),
                         const SizedBox(height: 12),
 

@@ -3,6 +3,7 @@ import 'package:provider/provider.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import '../models/product_model.dart';
 import '../providers/cart_provider.dart';
+import '../widgets/star_rating_widget.dart';
 import 'cart_page.dart';
 
 class ProductDetailPage extends StatefulWidget {
@@ -182,6 +183,17 @@ class _ProductDetailPageState extends State<ProductDetailPage> {
                     ],
                   ),
                   const SizedBox(height: 16),
+
+                  // Rating Section
+                  if (widget.product.hasRatings) ...[
+                    StarRatingWidget(
+                      rating: widget.product.averageRating,
+                      totalRatings: widget.product.totalRatings,
+                      starSize: 20,
+                      showCount: true,
+                    ),
+                    const SizedBox(height: 16),
+                  ],
 
                   // Stock Status
                   Row(

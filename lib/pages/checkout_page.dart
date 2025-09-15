@@ -4,6 +4,7 @@ import '../providers/cart_provider.dart';
 import '../providers/orders_provider.dart';
 import '../services/payment_service.dart';
 import '../services/notification_service.dart';
+import '../widgets/rating_bottom_sheet.dart';
 
 class CheckoutPage extends StatefulWidget {
   const CheckoutPage({super.key});
@@ -408,26 +409,23 @@ class _CheckoutPageState extends State<CheckoutPage> {
         // Clear cart
         cartProvider.clearCart();
 
-        // Show success message
+        // Show rating bottom sheet for each product in the order
         if (mounted) {
+          await _showRatingBottomSheets(context, order.items);
+        }
+
+        // Navigate to homepage and clear all previous pages
+        if (mounted) {
+          Navigator.of(context).pushNamedAndRemoveUntil('/', (route) => false);
+
+          // Show success message after navigation
           ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(
               content: Text('Order placed successfully! Order #${order.id}'),
               backgroundColor: Colors.green,
-              action: SnackBarAction(
-                label: 'View Orders',
-                textColor: Colors.white,
-                onPressed: () {
-                  Navigator.of(context).pushNamed('/orders');
-                },
-              ),
+              duration: const Duration(seconds: 4),
             ),
           );
-        }
-
-        // Navigate to orders page
-        if (mounted) {
-          Navigator.of(context).pushReplacementNamed('/orders');
         }
       } else {
         throw Exception('Payment failed');
@@ -465,6 +463,38 @@ class _CheckoutPageState extends State<CheckoutPage> {
           _isProcessing = false;
         });
       }
+    }
+  }
+
+  /// Show rating bottom sheets for each product in the order
+  Future<void> _showRatingBottomSheets(
+    BuildContext context,
+    List<dynamic> items,
+  ) async {
+    try {
+      // Get unique products from the order
+      final Set<String> productIds = items
+          .map((item) => item.productId as String)
+          .toSet();
+
+      for (String productId in productIds) {
+        try {
+          // Find the first item with this product ID to get product details
+          final item = items.firstWhere((item) => item.productId == productId);
+
+          // Use the product from the cart item directly
+          final product = item.product;
+
+          // Show rating bottom sheet
+          await RatingBottomSheet.show(context: context, product: product);
+        } catch (e) {
+          print('Error showing rating sheet for product $productId: $e');
+          // Continue with other products even if one fails
+        }
+      }
+    } catch (e) {
+      print('Error in rating bottom sheets: $e');
+      // Don't throw error, just log it
     }
   }
 }
