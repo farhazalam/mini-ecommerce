@@ -9,10 +9,8 @@ import 'products_service.dart';
 
 class PaymentService {
   // Replace these with your actual sandbox keys
-  static const String _publishableKey =
-      'pk_test_51S7XAARzy6xzTn9aZFkVnWMZEaPxDc7BZaP2oTUdyQ13U2xxZnKYhAWAbg0F3hDpG9onJKpeNdS6aWJfzE456QXe003S82f7nc'; // Your publishable key
-  static const String _secretKey =
-      'sk_test_51S7XAARzy6xzTn9aGsapksNLPGGsL6xSWUE4pUwSyji2OF9m8p1SHZlfhyAfQU79vCYcMtwA7UlnkJR2CcaytCM0001svHbto6'; // Your secret key
+  static const String _publishableKey = 'pk_test'; // Your publishable key
+  static const String _secretKey = 'sk_test'; // Your secret key
 
   static Future<void> initialize() async {
     Stripe.publishableKey = _publishableKey;
