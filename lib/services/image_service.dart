@@ -5,7 +5,6 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:image_cropper/image_cropper.dart';
-import 'package:permission_handler/permission_handler.dart';
 import '../config/app_config.dart';
 
 class ImageService {
@@ -35,8 +34,6 @@ class ImageService {
     } catch (e) {
       // Handle specific permission errors
       String errorMessage = e.toString();
-      print('Image picker error: $errorMessage'); // Debug log
-      print('Source: $source'); // Debug log
 
       // More specific error handling for iOS
       if (errorMessage.contains('camera') || errorMessage.contains('Camera')) {
@@ -142,10 +139,7 @@ class ImageService {
     try {
       final ref = _storage.refFromURL(imageUrl);
       await ref.delete();
-    } catch (e) {
-      // Ignore error if image doesn't exist
-      print('Error deleting old image: $e');
-    }
+    } catch (e) {}
   }
 
   // Complete flow: pick, crop, upload, and update profile
