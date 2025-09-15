@@ -11,6 +11,7 @@ A comprehensive Flutter e-commerce application built with Firebase backend, feat
 - **Shopping Cart**: Add/remove items with quantity management
 - **Order Management**: Track order status and history
 - **Payment Processing**: Stripe integration for secure payments
+- **Product Reviews & Ratings**: Rate and review products after order completion
 - **Profile Management**: User profile with photo upload and cropping
 
 ### Additional Features
@@ -132,8 +133,9 @@ flutter build ios --release
 6. **Cart**: Manage cart items and proceed to checkout
 7. **Checkout**: Payment processing with Stripe
 8. **Orders**: Track order status and history
-9. **Profile**: Manage user profile and settings
-10. **Maps**: View current location and nearby services
+9. **Reviews**: Rate and review products after order completion
+10. **Profile**: Manage user profile and settings
+11. **Maps**: View current location and nearby services
 
 ## 🔧 Key Dependencies
 
