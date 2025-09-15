@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:permission_handler/permission_handler.dart';
 import '../providers/auth_provider.dart';
 import '../services/image_service.dart';
 import '../config/app_config.dart';
@@ -351,18 +352,10 @@ class ProfilePage extends StatelessWidget {
     ImageSource source,
   ) async {
     try {
-      // Show loading dialog
-      showDialog(
-        context: context,
-        barrierDismissible: false,
-        builder: (context) => const Center(child: CircularProgressIndicator()),
-      );
-
-      // First, try to pick and crop the image
+      // First, try to pick the image (no loading dialog yet)
       final imageFile = await ImageService.pickImage(source: source);
       if (imageFile == null) {
         if (context.mounted) {
-          Navigator.of(context).pop(); // Close loading dialog
           ScaffoldMessenger.of(context).showSnackBar(
             const SnackBar(
               content: Text('No image selected'),
@@ -373,11 +366,10 @@ class ProfilePage extends StatelessWidget {
         return;
       }
 
-      // Crop the image
+      // Crop the image (no loading dialog yet)
       final croppedFile = await ImageService.cropImage(imageFile.path);
       if (croppedFile == null) {
         if (context.mounted) {
-          Navigator.of(context).pop(); // Close loading dialog
           ScaffoldMessenger.of(context).showSnackBar(
             const SnackBar(
               content: Text('Image cropping cancelled'),
@@ -388,28 +380,26 @@ class ProfilePage extends StatelessWidget {
         return;
       }
 
-      // Check if storage is enabled before closing loading dialog
+      // Check if storage is enabled
       if (!AppConfig.enableFirebaseStorage) {
         if (context.mounted) {
-          Navigator.of(context).pop(); // Close loading dialog
           _showStorageDisabledAfterCrop(context);
         }
         return;
       }
 
+      // Now show loading dialog for upload process
       if (context.mounted) {
-        Navigator.of(context).pop(); // Close loading dialog
-      }
-
-      // If storage is enabled, proceed with upload
-      try {
         showDialog(
           context: context,
           barrierDismissible: false,
           builder: (context) =>
               const Center(child: CircularProgressIndicator()),
         );
+      }
 
+      // If storage is enabled, proceed with upload
+      try {
         final imageUrl = await ImageService.uploadProfileImage(croppedFile);
         await ImageService.updateUserProfileImage(imageUrl);
         await authProvider.refreshUser();
@@ -437,8 +427,39 @@ class ProfilePage extends StatelessWidget {
     } catch (e) {
       if (context.mounted) {
         Navigator.of(context).pop(); // Close loading dialog
+
+        String errorMessage = 'Error: $e';
+        bool isPermissionError = false;
+
+        print('Profile page error: $e'); // Debug log
+
+        if (e.toString().contains('camera permission denied')) {
+          errorMessage = 'Camera permission is required to take photos.';
+          isPermissionError = true;
+        } else if (e.toString().contains('photo library permission denied')) {
+          errorMessage =
+              'Photo library permission is required to select photos.';
+          isPermissionError = true;
+        } else if (e.toString().contains('permission denied')) {
+          errorMessage = 'Permission is required to access photos.';
+          isPermissionError = true;
+        }
+
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Error: $e'), backgroundColor: Colors.red),
+          SnackBar(
+            content: Text(errorMessage),
+            backgroundColor: Colors.red,
+            duration: const Duration(seconds: 4),
+            action: isPermissionError
+                ? SnackBarAction(
+                    label: 'Settings',
+                    textColor: Colors.white,
+                    onPressed: () {
+                      openAppSettings();
+                    },
+                  )
+                : null,
+          ),
         );
       }
     }

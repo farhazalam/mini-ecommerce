@@ -19,12 +19,8 @@ class ImageService {
     ImageSource source = ImageSource.gallery,
   }) async {
     try {
-      // Request permission
-      final permission = await Permission.camera.request();
-      if (permission != PermissionStatus.granted) {
-        throw Exception('Camera permission denied');
-      }
-
+      // Let image_picker handle permissions automatically
+      // It will show the system permission dialog when needed
       final XFile? image = await _picker.pickImage(
         source: source,
         maxWidth: 1920,
@@ -37,7 +33,31 @@ class ImageService {
       }
       return null;
     } catch (e) {
-      throw Exception('Error picking image: $e');
+      // Handle specific permission errors
+      String errorMessage = e.toString();
+      print('Image picker error: $errorMessage'); // Debug log
+      print('Source: $source'); // Debug log
+
+      // More specific error handling for iOS
+      if (errorMessage.contains('camera') || errorMessage.contains('Camera')) {
+        throw Exception('camera permission denied');
+      } else if (errorMessage.contains('photo') ||
+          errorMessage.contains('gallery') ||
+          errorMessage.contains('library') ||
+          errorMessage.contains('Photos') ||
+          errorMessage.contains('PHPhotoLibrary')) {
+        throw Exception('photo library permission denied');
+      } else if (errorMessage.contains('permission') ||
+          errorMessage.contains('Permission')) {
+        // Generic permission error - determine based on source
+        if (source == ImageSource.camera) {
+          throw Exception('camera permission denied');
+        } else {
+          throw Exception('photo library permission denied');
+        }
+      } else {
+        throw Exception('Error picking image: $e');
+      }
     }
   }
 
